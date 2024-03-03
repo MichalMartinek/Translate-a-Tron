@@ -20,7 +20,7 @@ export const authConfig = {
         return Response.redirect(new URL('/protected', nextUrl));
       }
 
-      return true;
+      return false;
     },
   },
 } satisfies NextAuthConfig;
