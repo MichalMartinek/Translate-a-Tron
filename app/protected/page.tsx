@@ -1,12 +1,27 @@
-import { auth, signOut } from 'app/auth';
+import { auth, signOut } from "app/auth";
+import { TermWithTranslation, terms, translations } from "../schema";
+import { and, count, eq } from "drizzle-orm";
+import { db } from "../db";
+
+async function getData(lang: string): Promise<TermWithTranslation[]> {
+  console.log("Getting data");
+  const res = await db
+    .select()
+    .from(terms)
+    .leftJoin(
+      translations,
+      and(eq(terms.id, translations.termId), eq(translations.lang, lang))
+    );
+
+  return res;
+}
 
 export default async function ProtectedPage() {
-  let session = await auth();
-
+  let translations = await getData("cs");
+  console.log(translations);
   return (
     <div className="flex">
       <div className="w-screen h-screen flex flex-col space-y-5 justify-center items-center">
-        You are logged in as {session?.user?.email}
         <SignOut />
       </div>
     </div>
@@ -16,12 +31,22 @@ export default async function ProtectedPage() {
 function SignOut() {
   return (
     <form
-      action={async () => {
-        'use server';
-        await signOut();
+      action={async (formData: FormData) => {
+        "use server";
+        console.log(formData.get("term"));
+        const term = (formData.get("term") as string) ?? "";
+        const alreadyExists = await db
+          .select({ value: count() })
+          .from(terms)
+          .where(eq(terms.term, term));
+        console.log(alreadyExists);
+        if (alreadyExists[0].value === 0) {
+          await db.insert(terms).values({ term });
+        }
       }}
     >
-      <button type="submit">Sign out</button>
+      <input name="term" placeholder="New Term" />
+      <button type="submit">Add</button>
     </form>
   );
 }
