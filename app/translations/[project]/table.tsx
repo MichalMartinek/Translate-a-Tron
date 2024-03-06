@@ -1,5 +1,4 @@
 "use client";
-import TextareaAutosize from "react-textarea-autosize";
 import { Project, Term, Translation } from "@/app/schema";
 import {
   Select,
@@ -11,15 +10,15 @@ import {
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import TextareaAutosize from "react-textarea-autosize";
 
-import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 import { saveTranslation } from "./actions";
 
 type TermWithTranslations = Term & { translations: Translation[] };
@@ -27,22 +26,23 @@ type TermWithTranslations = Term & { translations: Translation[] };
 export default function TermsTable({
   project,
   terms,
+  choosedLang,
 }: {
   project: Project;
   terms: TermWithTranslations[];
+  choosedLang: string;
 }) {
-  const [lang, setLang] = useState(project.refLang);
+  const router = useRouter();
 
-  const isNotRefLang = lang !== project.refLang;
+  const isNotRefLang = choosedLang !== project.refLang;
   return (
     <>
       <div className="flex justify-between items-end mb-8">
         <h1 className="text-3xl font-bold tracking-tight">{project.name}</h1>
         <Select
-          value={lang}
+          value={choosedLang}
           onValueChange={(newValue) => {
-            setLang(newValue);
-            // TODO: REFRESH DATA because of ref lang change
+            router.push(`/translations/${project.id}/${newValue}`);
           }}
         >
           <SelectTrigger className="w-[180px]">
@@ -80,13 +80,13 @@ export default function TermsTable({
                     "flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   )}
                   defaultValue={
-                    term.translations.find((tr) => tr.lang === lang)
+                    term.translations.find((tr) => tr.lang === choosedLang)
                       ?.translation
                   }
                   minRows={1}
                   onBlur={async (e) => {
                     console.log("onBlur", e.target.value);
-                    await saveTranslation(term.id, lang, e.target.value);
+                    await saveTranslation(term.id, choosedLang, e.target.value);
                     console.log("saved");
                   }}
                 />

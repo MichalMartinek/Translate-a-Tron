@@ -23,7 +23,7 @@ export default async function ProjectsPage() {
         {projects.map((project) => (
           <li key={project.id}>
             <Link
-              href={`/translations/${project.id}`}
+              href={`/translations/${project.id}/${project.refLang}`}
               className={cn("text-lg hover:underline hover:text-emerald-700")}
             >
               {project.name}

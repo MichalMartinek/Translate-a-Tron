@@ -13,7 +13,10 @@ export async function saveTranslation(
     where: and(eq(translations.termId, termId), eq(translations.lang, lang)),
   });
   if (exitingTranslation) {
-    await db.update(translations).set({ translation }).where(eq(translations.id, exitingTranslation.id));
+    await db
+      .update(translations)
+      .set({ translation })
+      .where(eq(translations.id, exitingTranslation.id));
     return;
   }
   await db.insert(translations).values({ termId, lang, translation });
