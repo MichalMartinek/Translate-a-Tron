@@ -1,7 +1,15 @@
 import { db } from "@/app/db";
 import { Project, projects, terms } from "@/app/schema";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { and, count, eq } from "drizzle-orm";
+import Table from "./table";
 
 async function getTermsWithTranslation(projectId: number) {
   console.log("Getting data");
@@ -29,24 +37,15 @@ export default async function ProjectPage({
   params: { project: string };
 }) {
   const project = await getProject(Number(params.project));
-  console.log(project);
   if (!project) {
     return <div>Project not found</div>;
   }
-  let translations = await getTermsWithTranslation(project.id);
+  console.log(project);
+  const translations = await getTermsWithTranslation(project.id);
   console.log(translations);
   return (
-    <main className="min-h-screen p-24">
-      <div className="flex justify-between items-end mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">{project.name}</h1>
-      </div>
-      <ul>
-        {translations.map((term) => (
-          <li key={project.id}>
-            {term.term} - {term.translations?.length ?? 0} translations
-          </li>
-        ))}
-      </ul>
+    <main className="min-h-screen p-24 pt-8">
+      <Table terms={translations} project={project} />
 
       <AddTerm projectId={project.id} />
     </main>
