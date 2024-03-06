@@ -20,6 +20,7 @@ import {
 
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { saveTranslation } from "./actions";
 
 type TermWithTranslations = Term & { translations: Translation[] };
 
@@ -32,6 +33,7 @@ export default function TermsTable({
 }) {
   const [lang, setLang] = useState(project.refLang);
 
+  const isNotRefLang = lang !== project.refLang;
   return (
     <>
       <div className="flex justify-between items-end mb-8">
@@ -39,8 +41,8 @@ export default function TermsTable({
         <Select
           value={lang}
           onValueChange={(newValue) => {
-            console.log("new value", newValue);
             setLang(newValue);
+            // TODO: REFRESH DATA because of ref lang change
           }}
         >
           <SelectTrigger className="w-[180px]">
@@ -56,7 +58,7 @@ export default function TermsTable({
         <TableHeader>
           <TableRow>
             <TableHead>Term</TableHead>
-            <TableHead>Ref translation</TableHead>
+            {isNotRefLang && <TableHead>Ref translation</TableHead>}
             <TableHead>Translation</TableHead>
           </TableRow>
         </TableHeader>
@@ -64,15 +66,28 @@ export default function TermsTable({
           {terms.map((term) => (
             <TableRow key={term.id}>
               <TableCell className="font-medium">{term.term}</TableCell>
-              <TableCell>Paid</TableCell>
+              {isNotRefLang && (
+                <TableCell>
+                  {
+                    term.translations.find((tr) => tr.lang === project.refLang)
+                      ?.translation
+                  }
+                </TableCell>
+              )}
               <TableCell>
                 <TextareaAutosize
                   className={cn(
                     "flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   )}
+                  defaultValue={
+                    term.translations.find((tr) => tr.lang === lang)
+                      ?.translation
+                  }
                   minRows={1}
-                  onBlur={(e) => {
+                  onBlur={async (e) => {
                     console.log("onBlur", e.target.value);
+                    await saveTranslation(term.id, lang, e.target.value);
+                    console.log("saved");
                   }}
                 />
               </TableCell>

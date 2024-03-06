@@ -1,18 +1,10 @@
 import { db } from "@/app/db";
 import { Project, projects, terms } from "@/app/schema";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { and, count, eq } from "drizzle-orm";
 import Table from "./table";
 
 async function getTermsWithTranslation(projectId: number) {
-  console.log("Getting data");
   const res = await db.query.terms.findMany({
     where: eq(terms.projectId, projectId),
     with: {
@@ -40,9 +32,7 @@ export default async function ProjectPage({
   if (!project) {
     return <div>Project not found</div>;
   }
-  console.log(project);
   const translations = await getTermsWithTranslation(project.id);
-  console.log(translations);
   return (
     <main className="min-h-screen p-24 pt-8">
       <Table terms={translations} project={project} />

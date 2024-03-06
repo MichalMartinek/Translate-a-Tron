@@ -14,7 +14,6 @@ async function getData(): Promise<Project[]> {
 
 export default async function ProjectsPage() {
   const projects = await getData();
-  console.log(projects);
   return (
     <main className="min-h-screen p-24 p-8">
       <div className="flex justify-between items-end mb-8">
