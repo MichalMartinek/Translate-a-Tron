@@ -55,20 +55,11 @@ export default function Page() {
         </div>
         <div className="flex space-x-3">
           <Link
-            href="/protected"
+            href="/translations"
             className="text-stone-400 underline hover:text-stone-200 transition-all"
           >
             Protected Page
           </Link>
-          <p className="text-white">·</p>
-          <a
-            href="https://vercel.com/templates/next.js/prisma-postgres-auth-starter"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-stone-400 underline hover:text-stone-200 transition-all"
-          >
-            Deploy to Vercel
-          </a>
         </div>
       </div>
     </div>
