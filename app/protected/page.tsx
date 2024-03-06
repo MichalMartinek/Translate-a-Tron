@@ -1,7 +1,7 @@
-import { auth, signOut } from "app/auth";
-import { TermWithTranslation, terms, translations } from "../schema";
+import { Button } from "@/components/ui/button";
 import { and, count, eq } from "drizzle-orm";
 import { db } from "../db";
+import { TermWithTranslation, terms, translations } from "../schema";
 
 async function getData(lang: string): Promise<TermWithTranslation[]> {
   console.log("Getting data");
@@ -46,7 +46,8 @@ function SignOut() {
       }}
     >
       <input name="term" placeholder="New Term" />
-      <button type="submit">Add</button>
+
+      <Button type="submit">Add</Button>
     </form>
   );
 }
