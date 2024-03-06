@@ -44,7 +44,7 @@ export default async function RootLayout({
                     <span className="inline-block font-bold">Translate-a-Tron 🤖</span>
                   </Link>
                   <nav className="flex gap-6 ml-8">
-                    {items?.map(
+                    {/* {items?.map(
                       (item, index) =>
                         item.href && (
                           <Link
@@ -57,7 +57,7 @@ export default async function RootLayout({
                             {item.title}
                           </Link>
                         )
-                    )}
+                    )} */}
                   </nav>
                 </div>
               </div>

@@ -1,20 +1,14 @@
-import './globals.css';
+import "./globals.css";
 
-import { GeistSans } from 'geist/font/sans';
+import { GeistSans } from "geist/font/sans";
 
-let title = 'Next.js + Postgres Auth Starter';
+let title = "Translate-a-Tron 🤖";
 let description =
-  'This is a Next.js starter kit that uses NextAuth.js for simple email + password login and a Postgres database to persist the data.';
+  "Translate-a-Tron is a cutting-edge translation device that allows users to instantly translate languages in real-time. With advanced technology and a sleek design, Translate-a-Tron makes communicating with people from different cultures and backgrounds easier than ever before. Whether you're traveling abroad or conducting business internationally, Translate-a-Tron is the perfect tool to break down language barriers and connect with others on a global scale. Say goodbye to language misunderstandings and hello to seamless communication with Translate-a-Tron.";
 
 export const metadata = {
   title,
   description,
-  twitter: {
-    card: 'summary_large_image',
-    title,
-    description,
-  },
-  metadataBase: new URL('https://nextjs-postgres-auth.vercel.app'),
 };
 
 export default function RootLayout({
