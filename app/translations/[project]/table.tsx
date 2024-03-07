@@ -85,9 +85,7 @@ export default function TermsTable({
                   }
                   minRows={1}
                   onBlur={async (e) => {
-                    console.log("onBlur", e.target.value);
                     await saveTranslation(term.id, choosedLang, e.target.value);
-                    console.log("saved");
                   }}
                 />
               </TableCell>

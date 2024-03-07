@@ -33,7 +33,6 @@ export default async function ProjectPage({
 }: {
   params: { project: string; lang: string };
 }) {
-  console.log(params);
   const project = await getProject(Number(params.project));
   if (!project) {
     return <div>Project not found</div>;
@@ -54,13 +53,11 @@ function AddTerm({ projectId, lang }: { projectId: number; lang: string }) {
       className="flex space-x-4 w-full max-w-sm items-end gap-1.5"
       action={async (formData: FormData) => {
         "use server";
-        console.log(formData.get("term"));
         const term = (formData.get("term") as string) ?? "";
         const alreadyExists = await db
           .select({ value: count() })
           .from(terms)
           .where(and(eq(terms.term, term), eq(terms.projectId, projectId)));
-        console.log(alreadyExists);
         if (alreadyExists[0].value === 0) {
           await db.insert(terms).values({ term, projectId });
         }
