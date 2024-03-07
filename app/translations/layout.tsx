@@ -65,12 +65,13 @@ export default async function RootLayout({
                 </div>
               </div>
               <div className="flex flex-1 items-center justify-end space-x-4">
-                You are logged in as <strong className="ml-1">{session?.user?.email}</strong>
+                You are logged in as{" "}
+                <strong className="ml-1">{session?.user?.email}</strong>
                 <SignOut />
               </div>
             </div>
           </header>
-          <div className="flex-1">{children}</div>
+          <div className="flex-1 pt-8 min-h-screen container">{children}</div>
         </div>
       </body>
     </html>

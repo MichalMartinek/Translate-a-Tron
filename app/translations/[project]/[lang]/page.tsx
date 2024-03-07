@@ -39,7 +39,7 @@ export default async function ProjectPage({
   }
   const translations = await getTermsWithTranslation(project.id);
   return (
-    <main className="min-h-screen p-24 pt-8">
+    <main className="">
       <Table terms={translations} project={project} choosedLang={params.lang} />
       <Separator className="my-4 mt-10" />
       <AddTerm projectId={project.id} lang={params.lang} />

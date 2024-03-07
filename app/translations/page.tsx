@@ -15,11 +15,11 @@ async function getData(): Promise<Project[]> {
 export default async function ProjectsPage() {
   const projects = await getData();
   return (
-    <main className="min-h-screen p-24 p-8">
+    <main className=" ">
       <div className="flex justify-between items-end mb-8">
         <h1 className="text-3xl font-bold tracking-tight">Projects</h1>
       </div>
-      <ul>
+      <ul className="space-y-1 list-disc list-inside">
         {projects.map((project) => (
           <li key={project.id}>
             <Link
