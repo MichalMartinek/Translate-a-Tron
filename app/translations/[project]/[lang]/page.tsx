@@ -66,7 +66,7 @@ function AddTerm({ projectId, lang }: { projectId: number; lang: string }) {
       }}
     >
       <div className="grid items-center gap-1.5">
-        <Label htmlFor="email">New term</Label>
+        <Label htmlFor="term">New term</Label>
         <Input name="term" placeholder="New Term" />
       </div>
 

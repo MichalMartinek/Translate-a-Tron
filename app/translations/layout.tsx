@@ -26,7 +26,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const items = [{ title: "Sázíme stromy", href: "/?domain=sazimestromy.cz" }];
   let session = await auth();
   return (
     <html lang="en">
@@ -66,7 +65,7 @@ export default async function RootLayout({
               </div>
               <div className="flex flex-1 items-center justify-end space-x-4">
                 You are logged in as{" "}
-                <strong className="ml-1">{session?.user?.email}</strong>
+                <Link href="/translations/settings" className="ml-1 font-semibold hover:underline hover:text-emerald-700">{session?.user?.email}</Link>
                 <SignOut />
               </div>
             </div>
