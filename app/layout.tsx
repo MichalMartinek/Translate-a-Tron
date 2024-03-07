@@ -1,3 +1,4 @@
+import { Toaster } from "@/components/ui/toaster";
 import "./globals.css";
 
 import { GeistSans } from "geist/font/sans";
@@ -10,7 +11,7 @@ export const metadata = {
   title,
   description,
   icons: {
-    icon: '/favicon.ico',
+    icon: "/favicon.ico",
   },
 };
 
@@ -21,7 +22,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={GeistSans.variable}>{children}</body>
+      <body className={GeistSans.variable}>
+        {children}
+        <Toaster />
+      </body>
     </html>
   );
 }

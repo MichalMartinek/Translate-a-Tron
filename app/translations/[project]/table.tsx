@@ -1,5 +1,7 @@
 "use client";
 import { Project, Term, Translation } from "@/app/schema";
+import { toast, useToast } from "@/components/ui/use-toast";
+
 import {
   Select,
   SelectContent,
@@ -143,6 +145,9 @@ export default function TermsTable({
                   minRows={1}
                   onBlur={async (e) => {
                     await saveTranslation(term.id, choosedLang, e.target.value);
+                    toast({
+                      title: `Term "${term.term}" saved `,
+                    });
                   }}
                 />
               </TableCell>
