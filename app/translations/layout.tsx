@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { auth, signOut } from "app/auth";
 import { Inter } from "next/font/google";
@@ -13,9 +14,9 @@ function SignOut() {
         await signOut();
       }}
     >
-      <button className="ml-4" type="submit">
+      <Button className="ml-1" type="submit">
         Sign out
-      </button>
+      </Button>
     </form>
   );
 }
@@ -41,7 +42,9 @@ export default async function RootLayout({
               <div className="flex gap-6 md:gap-10">
                 <div className="flex items-center space-x-6">
                   <Link href="/" className="flex items-center space-x-2">
-                    <span className="inline-block font-bold">Translate-a-Tron 🤖</span>
+                    <span className="inline-block font-bold">
+                      Translate-a-Tron 🤖
+                    </span>
                   </Link>
                   <nav className="flex gap-6 ml-8">
                     {/* {items?.map(
@@ -62,7 +65,7 @@ export default async function RootLayout({
                 </div>
               </div>
               <div className="flex flex-1 items-center justify-end space-x-4">
-                You are logged in as {session?.user?.email}
+                You are logged in as <strong className="ml-1">{session?.user?.email}</strong>
                 <SignOut />
               </div>
             </div>

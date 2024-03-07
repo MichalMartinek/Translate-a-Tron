@@ -20,9 +20,16 @@ import TextareaAutosize from "react-textarea-autosize";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { saveTranslation } from "./actions";
+import { Label } from "@/components/ui/label";
+import { useState } from "react";
 
 type TermWithTranslations = Term & { translations: Translation[] };
 
+enum OrderBy {
+  UNTRANSLATED_FIRST = "UNTRANSLATED_FIRST",
+  A_Z = "A_Z",
+  Z_A = "Z_A",
+}
 export default function TermsTable({
   project,
   terms,
@@ -33,26 +40,76 @@ export default function TermsTable({
   choosedLang: string;
 }) {
   const router = useRouter();
+  const [order, setOrder] = useState<OrderBy>(OrderBy.UNTRANSLATED_FIRST);
+
+  const orderedTerms = terms.sort((a, b) => {
+    const aTranslation =
+      a.translations.find((tr) => tr.lang === choosedLang)?.translation || "";
+    const bTranslation =
+      b.translations.find((tr) => tr.lang === choosedLang)?.translation || "";
+    if (order === OrderBy.UNTRANSLATED_FIRST) {
+      if (!aTranslation && bTranslation) {
+        return -1;
+      }
+      if (aTranslation && !bTranslation) {
+        return 1;
+      }
+    }
+    if (order === OrderBy.Z_A) {
+      return b.term.localeCompare(a.term);
+    }
+    return a.term.localeCompare(b.term);
+  });
 
   const isNotRefLang = choosedLang !== project.refLang;
   return (
     <>
-      <div className="flex justify-between items-end mb-8">
+      <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold tracking-tight">{project.name}</h1>
-        <Select
-          value={choosedLang}
-          onValueChange={(newValue) => {
-            router.push(`/translations/${project.id}/${newValue}`);
-          }}
-        >
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Theme" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="cs">Czech</SelectItem>
-            <SelectItem value="en">English</SelectItem>
-          </SelectContent>
-        </Select>
+        <div className="flex">
+          <div className="grid items-center gap-1.5">
+            <Label htmlFor="email" className="mb-1">
+              Language
+            </Label>
+            <Select
+              value={choosedLang}
+              onValueChange={(newValue) => {
+                router.push(`/translations/${project.id}/${newValue}`);
+              }}
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Theme" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="cs">Czech</SelectItem>
+                <SelectItem value="en">English</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="grid items-center gap-1.5 ml-4">
+            <Label htmlFor="email" className="mb-1">
+              Order by
+            </Label>
+            <Select
+              value={order}
+              onValueChange={(newValue) => {
+                setOrder(newValue as OrderBy);
+              }}
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Theme" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={OrderBy.UNTRANSLATED_FIRST}>
+                  Untranslated first
+                </SelectItem>
+                <SelectItem value={OrderBy.A_Z}>Terms A-Z</SelectItem>
+                <SelectItem value={OrderBy.Z_A}>Terms Z-A</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
       </div>
       <Table>
         <TableHeader>
