@@ -55,7 +55,7 @@ export const terms = pgTable("Term", {
   id: serial("id").primaryKey(),
   term: varchar("term", { length: 128 }).notNull(),
   projectId: integer("project_id")
-    .references(() => projects.id)
+    .references(() => projects.id, { onDelete: "cascade" })
     .notNull(),
 });
 
@@ -69,7 +69,7 @@ export type NewTerm = typeof terms.$inferInsert;
 export const translations = pgTable("Translation", {
   id: serial("id").primaryKey(),
   termId: integer("term_id")
-    .references(() => terms.id)
+    .references(() => terms.id, { onDelete: "cascade" })
     .notNull(),
   translation: text("translation").notNull(),
   lang: varchar("lang", { length: 8 }).notNull(),
