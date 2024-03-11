@@ -1,5 +1,5 @@
 import { db } from "@/app/db";
-import { projects, tokens, terms } from "@/app/schema";
+import { projects, tokens, terms, translations } from "@/app/schema";
 import { and, eq, inArray } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -63,6 +63,37 @@ export async function POST(request: NextRequest) {
       );
       stats.deleted += termsOnlyInDb.length;
     }
+  }
+  const translationsToAdd = [];
+  for (const [key, value] of Object.entries(payload.data)) {
+    const termInDb = foundTerms.find((term) => term.term === key);
+    if (termInDb) {
+      if (!termInDb.translations.find((t) => t.lang === payload.lang)) {
+        translationsToAdd.push({
+          lang: payload.lang,
+          termId: termInDb.id,
+          translation: value,
+        });
+        stats.updated++;
+      }
+    } else {
+      const newTerm = await db
+        .insert(terms)
+        .values({
+          projectId: payload.projectId,
+          term: key,
+        })
+        .returning();
+      translationsToAdd.push({
+        lang: payload.lang,
+        termId: newTerm[0].id,
+        translation: value,
+      });
+      stats.added++;
+    }
+  }
+  if (translationsToAdd.length > 0) {
+    await db.insert(translations).values(translationsToAdd);
   }
 
   return new NextResponse(JSON.stringify({ stats }), {
