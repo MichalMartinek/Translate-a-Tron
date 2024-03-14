@@ -23,22 +23,22 @@ export const {
       },
     }),
   ],
-  callbacks:{
+  callbacks: {
     // the callbacks will be executed after a well done login
-    async jwt ({ token, user }) {
-      if (user?.id) token._id = user.id
-      return token
+    async jwt({ token, user }) {
+      if (user?.id) token._id = user.id;
+      return token;
     },
-    async session ({ session, token, user }) {
-        // user id is stored in ._id when using credentials provider
-        if (token?._id) session.user.id = token._id
-    
-        // user id is stored sub ._id when using google provider
-        if (token?.sub) session.user.id = token.sub
-  
-        // we'll update the session object with those 
-        // informations besides the ones it already has
-        return session
+    async session({ session, token, user }) {
+      // user id is stored in ._id when using credentials provider
+      if (token?._id && session.user) session.user.id = token._id as any;
+
+      // user id is stored sub ._id when using google provider
+      if (token?.sub && session.user) session.user.id = token.sub;
+
+      // we'll update the session object with those
+      // informations besides the ones it already has
+      return session;
     },
   },
 });
