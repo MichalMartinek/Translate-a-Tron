@@ -33,12 +33,10 @@ async function getUserData(): Promise<User[]> {
 
 export default async function ProjectsPage() {
   let session = await auth();
-  console.log(session?.user);
   const userId = Number(session?.user?.id);
 
   const tokens = await getTokenData(userId);
   const users = await getUserData();
-  console.log(users);
   return (
     <main className="pb-16">
       <div className="flex justify-between items-end mb-8">
