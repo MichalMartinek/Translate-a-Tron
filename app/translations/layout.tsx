@@ -38,16 +38,33 @@ export default async function RootLayout({
                   Translate-a-Tron 🤖
                 </span>
               </Link>
+              <nav className="flex gap-6 ml-8">
+                <Link
+                  href={"/translations"}
+                  className={cn(
+                    "flex items-center text-sm font-medium text-muted-foreground hover:underline hover:text-emerald-700"
+                  )}
+                >
+                  All projects
+                </Link>
+                <Link
+                  href={"/translations/settings"}
+                  className={cn(
+                    "flex items-center text-sm font-medium text-muted-foreground hover:underline hover:text-emerald-700"
+                  )}
+                >
+                  Settings
+                </Link>
+              </nav>
             </div>
           </div>
           <div className="flex flex-1 items-center justify-end space-x-4">
             You are logged in as{" "}
-            <Link
-              href="/translations/settings"
-              className="ml-1 font-semibold hover:underline hover:text-emerald-700"
+            <span
+              className="ml-1 font-semibold"
             >
               {session?.user?.email}
-            </Link>
+            </span>
             <SignOut />
           </div>
         </div>
