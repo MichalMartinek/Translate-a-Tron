@@ -40,7 +40,7 @@ export default async function ProjectsPage() {
   const users = await getUserData();
   console.log(users);
   return (
-    <main className=" ">
+    <main className="pb-16">
       <div className="flex justify-between items-end mb-8">
         <h1 className="text-3xl font-bold tracking-tight">Users</h1>
       </div>
@@ -98,7 +98,7 @@ export default async function ProjectsPage() {
 function AddToken({ userId }: { userId: number }) {
   return (
     <form
-      className="flex space-x-4 w-full max-w-sm items-end gap-1.5"
+      className="flex space-x-4 w-full max-w-sm items-end gap-1.5 ml-4"
       action={async (formData: FormData) => {
         "use server";
         const name = (formData.get("name") as string) ?? "";
@@ -109,7 +109,7 @@ function AddToken({ userId }: { userId: number }) {
       }}
     >
       <div className="grid items-center gap-1.5">
-        <Label htmlFor="name">Token name</Label>
+        <Label htmlFor="name" className="ml-3">Token name</Label>
         <Input name="name" placeholder="Token name" />
       </div>
       <Button type="submit">Generate</Button>
@@ -120,7 +120,7 @@ function AddToken({ userId }: { userId: number }) {
 function AddUser() {
   return (
     <form
-      className="flex space-x-4 w-full max-w-sm items-end gap-1.5"
+      className="flex space-x-4 w-full max-w-sm items-end gap-1.5 ml-4"
       action={async (formData: FormData) => {
         "use server";
         let email = formData.get("email") as string;
@@ -137,11 +137,11 @@ function AddUser() {
       }}
     >
       <div className="grid items-center gap-1.5">
-        <Label htmlFor="email">Email</Label>
+        <Label htmlFor="email" className="ml-3">Email</Label>
         <Input name="email" type="email" placeholder="Email" />
       </div>
       <div className="grid items-center gap-1.5">
-        <Label htmlFor="password">Password</Label>
+        <Label htmlFor="password" className="ml-3">Password</Label>
         <Input name="password" type="password" placeholder="Password" />
       </div>
       <Button type="submit">Create</Button>
