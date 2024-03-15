@@ -25,14 +25,11 @@ export async function POST(request: NextRequest) {
   }
   const payload: MyData = await request.json();
   const sync = payload.sync ?? false;
-  console.log(payload.lang);
-  console.log(payload.projectId);
 
   // TODO: check if the user has access to the project
   const project = await db.query.projects.findFirst({
     where: eq(projects.id, payload.projectId),
   });
-  console.log(project);
   if (!project) {
     return new NextResponse(JSON.stringify({ error: "Project not found" }), {
       status: 404,

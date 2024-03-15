@@ -1,6 +1,6 @@
 "use client";
 import { Project, Term, Translation } from "@/app/schema";
-import { toast, useToast } from "@/components/ui/use-toast";
+import { toast } from "@/components/ui/use-toast";
 
 import {
   Select,
@@ -19,13 +19,12 @@ import {
 } from "@/components/ui/table";
 import TextareaAutosize from "react-textarea-autosize";
 
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
-import { saveTranslation } from "./actions";
-import { Label } from "@/components/ui/label";
 import { useState } from "react";
-
-type TermWithTranslations = Term & { translations: Translation[] };
+import { TermWithTranslations, saveTranslation, translate } from "./actions";
 
 enum OrderBy {
   UNTRANSLATED_FIRST = "UNTRANSLATED_FIRST",
@@ -119,12 +118,18 @@ export default function TermsTable({
             <TableHead>Term</TableHead>
             {isNotRefLang && <TableHead>Ref translation</TableHead>}
             <TableHead>Translation</TableHead>
+            <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {terms.map((term) => (
+          {orderedTerms.map((term) => (
             <TableRow key={term.id}>
-              <TableCell className="font-medium" width={isNotRefLang ? "20%": "40%"}>{term.term}</TableCell>
+              <TableCell
+                className="font-medium"
+                width={isNotRefLang ? "20%" : "40%"}
+              >
+                {term.term}
+              </TableCell>
               {isNotRefLang && (
                 <TableCell width={"40%"}>
                   {
@@ -133,7 +138,7 @@ export default function TermsTable({
                   }
                 </TableCell>
               )}
-              <TableCell width={isNotRefLang ? "40%": "60%"}>
+              <TableCell width={isNotRefLang ? "40%" : "60%"}>
                 <TextareaAutosize
                   className={cn(
                     "flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
@@ -150,6 +155,20 @@ export default function TermsTable({
                     });
                   }}
                 />
+              </TableCell>
+              <TableCell>
+                {isNotRefLang && (
+                  <Button
+                    onClick={async () => {
+                      await translate(term, choosedLang, project.refLang);
+                      toast({
+                        title: `Term "${term.term}" saved `,
+                      });
+                    }}
+                  >
+                    Translate
+                  </Button>
+                )}
               </TableCell>
             </TableRow>
           ))}

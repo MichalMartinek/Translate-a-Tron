@@ -8,6 +8,7 @@ import Table from "../table";
 import { revalidatePath } from "next/cache";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import OpenAI from "openai";
 
 async function getTermsWithTranslation(projectId: number) {
   const res = await db.query.terms.findMany({
