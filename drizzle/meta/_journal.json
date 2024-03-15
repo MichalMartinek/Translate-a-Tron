@@ -57,6 +57,13 @@
       "when": 1710080363517,
       "tag": "0007_useful_wallow",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "5",
+      "when": 1710534638626,
+      "tag": "0008_tan_doctor_octopus",
+      "breakpoints": true
     }
   ]
 }

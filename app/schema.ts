@@ -19,6 +19,8 @@ export const usersRelations = relations(users, ({ many }) => ({
   tokens: many(tokens, { relationName: "userTokens" }),
 }));
 
+export type User = typeof users.$inferSelect;
+
 // Tokens
 export const tokens = pgTable("Token", {
   id: serial("id").primaryKey(),
@@ -26,7 +28,7 @@ export const tokens = pgTable("Token", {
   key: varchar("key", { length: 228 }).notNull(),
   expired: boolean("expired").notNull(),
   userId: integer("user_id")
-    .references(() => users.id)
+    .references(() => users.id, { onDelete: "cascade" })
     .notNull(),
 });
 

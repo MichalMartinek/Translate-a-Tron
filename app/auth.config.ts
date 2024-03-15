@@ -14,7 +14,6 @@ export const authConfig = {
     authorized({ auth, request: { nextUrl } }) {
       let isLoggedIn = !!auth?.user;
       let isOnDashboard = nextUrl.pathname.startsWith("/translations");
-
       if (isOnDashboard) {
         if (isLoggedIn) return true;
         return false; // Redirect unauthenticated users to login page
@@ -22,6 +21,7 @@ export const authConfig = {
         return Response.redirect(new URL("/translations", nextUrl));
       }
 
+      // Limit public register for now
       return false;
     },
   },
