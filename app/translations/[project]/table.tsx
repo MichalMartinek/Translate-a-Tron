@@ -149,7 +149,7 @@ export default function TermsTable({
                   }
                   minRows={1}
                   onBlur={async (e) => {
-                    await saveTranslation(term.id, choosedLang, e.target.value);
+                    await saveTranslation(term, choosedLang, e.target.value);
                     toast({
                       title: `Term "${term.term}" saved `,
                     });

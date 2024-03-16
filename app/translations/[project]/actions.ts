@@ -25,7 +25,7 @@ export async function translate(
   });
 
   await saveTranslation(
-    term.id,
+    term,
     lang,
     chatCompletion.choices[0].message.content?.replaceAll('"', "") ?? ""
   );
@@ -33,12 +33,12 @@ export async function translate(
 }
 
 export async function saveTranslation(
-  termId: number,
+  term: Term,
   lang: string,
   translation: string
 ) {
   const exitingTranslation = await db.query.translations.findFirst({
-    where: and(eq(translations.termId, termId), eq(translations.lang, lang)),
+    where: and(eq(translations.termId, term.id), eq(translations.lang, lang)),
   });
   if (exitingTranslation) {
     await db
@@ -47,5 +47,6 @@ export async function saveTranslation(
       .where(eq(translations.id, exitingTranslation.id));
     return;
   }
-  await db.insert(translations).values({ termId, lang, translation });
+  await db.insert(translations).values({ termId: term.id, lang, translation });
+  revalidatePath(`/translations/${term.projectId}/${lang}`);
 }
