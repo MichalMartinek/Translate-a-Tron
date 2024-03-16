@@ -40,6 +40,13 @@ export default async function ProjectsPage() {
   return (
     <main className="pb-16">
       <div className="flex justify-between items-end mb-8">
+        <h1 className="text-3xl font-bold tracking-tight">
+          Change your own password
+        </h1>
+      </div>
+      <ChangePassword />
+      <Separator className="my-4 mt-10" />
+      <div className="flex justify-between items-end mb-8">
         <h1 className="text-3xl font-bold tracking-tight">Users</h1>
       </div>
       <Table>
@@ -60,8 +67,9 @@ export default async function ProjectsPage() {
           ))}
         </TableBody>
       </Table>
-      <Separator className="my-4 mt-10" />
+      <h2 className="text-l font-bold tracking-tight mb-4">Create new user</h2>
       <AddUser />
+      <Separator className="my-4 mt-10" />
       <div className="flex justify-between items-end mb-8 mt-8">
         <h1 className="text-3xl font-bold tracking-tight">Tokens</h1>
       </div>
@@ -87,7 +95,8 @@ export default async function ProjectsPage() {
           ))}
         </TableBody>
       </Table>
-      <Separator className="my-4 mt-10" />
+
+      <h2 className="text-l font-bold tracking-tight mb-4">Create new token</h2>
       <AddToken userId={userId} />
     </main>
   );
@@ -96,7 +105,7 @@ export default async function ProjectsPage() {
 function AddToken({ userId }: { userId: number }) {
   return (
     <form
-      className="flex space-x-4 w-full max-w-sm items-end gap-1.5 ml-4"
+      className="flex w-full max-w-sm items-end gap-1.5"
       action={async (formData: FormData) => {
         "use server";
         const name = (formData.get("name") as string) ?? "";
@@ -107,7 +116,9 @@ function AddToken({ userId }: { userId: number }) {
       }}
     >
       <div className="grid items-center gap-1.5">
-        <Label htmlFor="name" className="ml-3">Token name</Label>
+        <Label htmlFor="name" className="ml-3">
+          Token name
+        </Label>
         <Input name="name" placeholder="Token name" />
       </div>
       <Button type="submit">Generate</Button>
@@ -118,7 +129,7 @@ function AddToken({ userId }: { userId: number }) {
 function AddUser() {
   return (
     <form
-      className="flex space-x-4 w-full max-w-sm items-end gap-1.5 ml-4"
+      className="flex w-full max-w-sm items-end gap-1.5"
       action={async (formData: FormData) => {
         "use server";
         let email = formData.get("email") as string;
@@ -135,14 +146,48 @@ function AddUser() {
       }}
     >
       <div className="grid items-center gap-1.5">
-        <Label htmlFor="email" className="ml-3">Email</Label>
+        <Label htmlFor="email" className="ml-3">
+          Email
+        </Label>
         <Input name="email" type="email" placeholder="Email" />
       </div>
       <div className="grid items-center gap-1.5">
-        <Label htmlFor="password" className="ml-3">Password</Label>
+        <Label htmlFor="password" className="ml-3">
+          Password
+        </Label>
         <Input name="password" type="password" placeholder="Password" />
       </div>
       <Button type="submit">Create</Button>
+    </form>
+  );
+}
+
+function ChangePassword() {
+  return (
+    <form
+      className="flex w-full max-w-sm items-end gap-1.5"
+      action={async (formData: FormData) => {
+        "use server";
+        let email = formData.get("email") as string;
+        let password = formData.get("password") as string;
+        let user = await getUser(email);
+
+        if (user.length > 0) {
+          return "User already exists"; // TODO: Handle errors with useFormStatus
+        } else {
+          await createUser(email, password);
+        }
+        // get current path and revalidate
+        revalidatePath(`/translations/settings`);
+      }}
+    >
+      <div className="grid items-center gap-1.5">
+        <Label htmlFor="password" className="ml-3">
+          New password
+        </Label>
+        <Input name="password" type="password" placeholder="New password" />
+      </div>
+      <Button type="submit">Change password</Button>
     </form>
   );
 }
@@ -169,9 +214,7 @@ function DeleteUser({ userId }: { userId: number }) {
     <form
       action={async () => {
         "use server";
-        await db
-          .delete(users)
-          .where(eq(users.id, userId));
+        await db.delete(users).where(eq(users.id, userId));
         revalidatePath(`/translations/settings`);
       }}
     >
