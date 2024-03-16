@@ -3,37 +3,104 @@ import { Button } from "@/components/ui/button";
 import { count, eq } from "drizzle-orm";
 import { db } from "../db";
 import Link from "next/link";
-import { Container } from "lucide-react";
-import { cn } from "@/lib/utils";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { revalidatePath } from "next/cache";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
 
-async function getData(): Promise<Project[]> {
-  const res = await db.select().from(projects);
-
-  return res;
+type ProjectWithCount = Project & { count: number };
+async function getData(): Promise<ProjectWithCount[]> {
+  const p = await db.select().from(projects);
+  const t = await Promise.all(
+    p.map(async (project) => ({
+      ...project,
+      count: (
+        await db
+          .select({ value: count() })
+          .from(terms)
+          .where(eq(terms.projectId, project.id))
+      )[0].value,
+    }))
+  );
+  return t;
 }
 
 export default async function ProjectsPage() {
-  const projects = await getData();
+  const projectsData = await getData();
   return (
     <main className=" ">
       <div className="flex justify-between items-end mb-8">
         <h1 className="text-3xl font-bold tracking-tight">Projects</h1>
       </div>
-      <ul className="space-y-1 list-disc list-inside">
-        {projects.map((project) => (
-          <li key={project.id}>
-            <Link
-              href={`/translations/${project.id}/${project.refLang}`}
-              className={cn("text-lg hover:underline hover:text-emerald-700")}
-            >
-              {project.name}
+      <div className="grid grid-cols-4 items-center gap-3">
+        {projectsData.map((project) => (
+          <Card key={project.id}>
+            <Link href={`/translations/${project.id}/${project.refLang}`}>
+              <CardHeader>
+                <CardTitle>{project.name}</CardTitle>
+                <CardDescription>EN, CZ</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p>{project.count} terms</p>
+              </CardContent>
             </Link>
-          </li>
+            <CardFooter>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="outline">Delete</Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>
+                      Are you absolutely sure?
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This action cannot be undone. This will permanently delete
+                      your project and all translations.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <form
+                      action={async () => {
+                        "use server";
+                        console.log("delete", project.id);
+                        await db
+                          .delete(projects)
+                          .where(eq(projects.id, project.id));
+                        // get current path and revalidate
+                        revalidatePath(`/translations/settings`);
+                      }}
+                    >
+                      <AlertDialogAction type="submit">
+                        Continue
+                      </AlertDialogAction>
+                    </form>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </CardFooter>
+          </Card>
         ))}
-      </ul>
+      </div>
       <h2 className="text-l font-bold tracking-tight mb-4 mt-8">
         Create new project
       </h2>

@@ -66,7 +66,10 @@ export default function TermsTable({
   return (
     <>
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">{project.name}</h1>
+        <h1 className="text-3xl font-bold tracking-tight">
+          <span className="font-normal text-slate-400 mr-4">#{project.id}</span>
+          {project.name}
+        </h1>
         <div className="flex">
           <div className="grid items-center gap-1.5">
             <Label htmlFor="email" className="mb-1">
