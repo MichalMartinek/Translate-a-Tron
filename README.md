@@ -1,11 +1,8 @@
 # Translate-a-Tron
 
 ## TODO
+- search by term or text
 
-- Import
-- Sync
-- Export script
-- reset pasword
 
 Other things
 

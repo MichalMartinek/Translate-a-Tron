@@ -82,7 +82,6 @@ export default async function ProjectsPage() {
                     <form
                       action={async () => {
                         "use server";
-                        console.log("delete", project.id);
                         await db
                           .delete(projects)
                           .where(eq(projects.id, project.id));
