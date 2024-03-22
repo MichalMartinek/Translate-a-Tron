@@ -98,6 +98,9 @@ export default async function ProjectsPage() {
 
       <h2 className="text-l font-bold tracking-tight mb-4">Create new token</h2>
       <AddToken userId={userId} />
+      <Separator className="my-4 mt-10" />
+
+      <p>App built at: {process.env.NEXT_PUBLIC_LAST_UPDATED_AT || "-"}</p>
     </main>
   );
 }
