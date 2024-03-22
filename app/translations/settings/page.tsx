@@ -100,7 +100,12 @@ export default async function ProjectsPage() {
       <AddToken userId={userId} />
       <Separator className="my-4 mt-10" />
 
-      <p>App built at: {process.env.NEXT_PUBLIC_LAST_UPDATED_AT || "-"}</p>
+      <p>
+        App built at:{" "}
+        {process.env.NEXT_PUBLIC_LAST_UPDATED_AT
+          ? new Date(process.env.NEXT_PUBLIC_LAST_UPDATED_AT).toLocaleString()
+          : "-"}
+      </p>
     </main>
   );
 }
