@@ -1,0 +1,9 @@
+{
+  "name": "translate-o-tron-import",
+  "version": "1.0.9",
+  "description": "",
+  "bin": "./bin.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
