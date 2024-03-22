@@ -3,7 +3,7 @@ import { projects, tokens, terms, translations } from "@/app/schema";
 import { and, eq, inArray } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
-export enum Operation {
+enum OperationType {
   SYNC = "sync",
   UPLOAD = "upload",
   DOWNLOAD = "download",
@@ -11,7 +11,7 @@ export enum Operation {
 export type MyData = {
   lang: string;
   projectId: number;
-  operation: Operation;
+  operation: OperationType;
   data: {
     [key: string]: string;
   };
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
     });
   }
   const payload: MyData = await request.json();
-  const sync = payload.operation === Operation.SYNC;
+  const sync = payload.operation === OperationType.SYNC;
 
   // TODO: check if the user has access to the project
   const project = await db.query.projects.findFirst({
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
       status: 404,
     });
   }
-  if (payload.operation === Operation.DOWNLOAD) {
+  if (payload.operation === OperationType.DOWNLOAD) {
     const termsInProject = await db.query.terms.findMany({
       where: eq(terms.projectId, payload.projectId),
       with: {
