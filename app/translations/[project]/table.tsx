@@ -25,6 +25,7 @@ import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { TermWithTranslations, saveTranslation, translate } from "./actions";
+import { Input } from "@/components/ui/input";
 
 enum OrderBy {
   UNTRANSLATED_FIRST = "UNTRANSLATED_FIRST",
@@ -42,25 +43,40 @@ export default function TermsTable({
 }) {
   const router = useRouter();
   const [order, setOrder] = useState<OrderBy>(OrderBy.UNTRANSLATED_FIRST);
+  const [search, setSearch] = useState("");
 
-  const orderedTerms = terms.sort((a, b) => {
-    const aTranslation =
-      a.translations.find((tr) => tr.lang === choosedLang)?.translation || "";
-    const bTranslation =
-      b.translations.find((tr) => tr.lang === choosedLang)?.translation || "";
-    if (order === OrderBy.UNTRANSLATED_FIRST) {
-      if (!aTranslation && bTranslation) {
-        return -1;
+  const orderedTerms = terms
+    .filter((term) => {
+      if (!search) {
+        return true;
       }
-      if (aTranslation && !bTranslation) {
-        return 1;
+      return (
+        term.term.toLowerCase().includes(search.toLowerCase()) ||
+        term.translations.some(
+          (tr) =>
+            (tr.lang === choosedLang || tr.lang === project.refLang) &&
+            tr.translation.toLowerCase().includes(search.toLowerCase())
+        )
+      );
+    })
+    .sort((a, b) => {
+      const aTranslation =
+        a.translations.find((tr) => tr.lang === choosedLang)?.translation || "";
+      const bTranslation =
+        b.translations.find((tr) => tr.lang === choosedLang)?.translation || "";
+      if (order === OrderBy.UNTRANSLATED_FIRST) {
+        if (!aTranslation && bTranslation) {
+          return -1;
+        }
+        if (aTranslation && !bTranslation) {
+          return 1;
+        }
       }
-    }
-    if (order === OrderBy.Z_A) {
-      return b.term.localeCompare(a.term);
-    }
-    return a.term.localeCompare(b.term);
-  });
+      if (order === OrderBy.Z_A) {
+        return b.term.localeCompare(a.term);
+      }
+      return a.term.localeCompare(b.term);
+    });
 
   const isNotRefLang = choosedLang !== project.refLang;
   return (
@@ -113,6 +129,20 @@ export default function TermsTable({
               </SelectContent>
             </Select>
           </div>
+
+          <div className="grid items-center gap-1.5 ml-4">
+            <Label htmlFor="search" className="mb-1">
+              Search
+            </Label>
+            <Input
+              name="search"
+              placeholder="Enter term or translation"
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+              }}
+            />
+          </div>
         </div>
       </div>
       <Table>
@@ -121,7 +151,7 @@ export default function TermsTable({
             <TableHead>Term</TableHead>
             {isNotRefLang && <TableHead>Ref translation</TableHead>}
             <TableHead>Translation</TableHead>
-            <TableHead>Actions</TableHead>
+            {isNotRefLang && <TableHead>Actions</TableHead>}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -159,8 +189,8 @@ export default function TermsTable({
                   }}
                 />
               </TableCell>
-              <TableCell>
-                {isNotRefLang && (
+              {isNotRefLang && (
+                <TableCell>
                   <Button
                     onClick={async () => {
                       await translate(term, choosedLang, project.refLang);
@@ -171,8 +201,8 @@ export default function TermsTable({
                   >
                     Translate
                   </Button>
-                )}
-              </TableCell>
+                </TableCell>
+              )}
             </TableRow>
           ))}
         </TableBody>
