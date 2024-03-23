@@ -18,6 +18,7 @@ export const {
         if (user.length === 0) return null;
         let passwordsMatch = await compare(password, user[0].password!);
         if (passwordsMatch) return user[0] as any;
+        return null;
       },
     }),
   ],
