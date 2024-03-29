@@ -96,6 +96,7 @@ export async function POST(request: NextRequest) {
           lang: payload.lang,
           termId: termInDb.id,
           translation: value,
+          updatedById: tokenInDb.userId,
         });
         stats.updated++;
       }
@@ -111,6 +112,7 @@ export async function POST(request: NextRequest) {
         lang: payload.lang,
         termId: newTerm[0].id,
         translation: value,
+        updatedById: tokenInDb.userId,
       });
       stats.added++;
     }

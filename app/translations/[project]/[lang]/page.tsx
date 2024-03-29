@@ -3,18 +3,22 @@ import { Project, projects, terms } from "@/app/schema";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-import { and, count, eq } from "drizzle-orm";
-import Table from "../table";
-import { revalidatePath } from "next/cache";
+import { auth } from "@/app/auth";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import OpenAI from "openai";
+import { and, count, eq } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
+import Table from "../table";
 
 async function getTermsWithTranslation(projectId: number) {
   const res = await db.query.terms.findMany({
     where: eq(terms.projectId, projectId),
     with: {
-      translations: true,
+      translations: {
+        with: {
+          updatedBy: true,
+        },
+      },
     },
   });
 
@@ -34,6 +38,8 @@ export default async function ProjectPage({
 }: {
   params: { project: string; lang: string };
 }) {
+  let session = await auth();
+  const userId = Number(session?.user?.id);
   const project = await getProject(Number(params.project));
   if (!project) {
     return <div>Project not found</div>;
@@ -41,7 +47,12 @@ export default async function ProjectPage({
   const translations = await getTermsWithTranslation(project.id);
   return (
     <main className="">
-      <Table terms={translations} project={project} choosedLang={params.lang} />
+      <Table
+        terms={translations}
+        project={project}
+        choosedLang={params.lang}
+        userId={userId}
+      />
       <Separator className="my-4 mt-10" />
       <AddTerm projectId={project.id} lang={params.lang} />
     </main>

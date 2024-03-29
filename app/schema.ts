@@ -5,6 +5,7 @@ import {
   pgTable,
   serial,
   text,
+  timestamp,
   varchar,
 } from "drizzle-orm/pg-core";
 
@@ -74,6 +75,12 @@ export const translations = pgTable("Translation", {
     .references(() => terms.id, { onDelete: "cascade" })
     .notNull(),
   translation: text("translation").notNull(),
+  generatedByAI: boolean("generated_by_ai").notNull().default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+  updatedById: integer("updated_by_id").references(() => users.id, {
+    onDelete: "set null",
+  }),
   lang: varchar("lang", { length: 8 }).notNull(),
 });
 
@@ -83,7 +90,15 @@ export const translationsRelations = relations(translations, ({ one }) => ({
     references: [terms.id],
     relationName: "termTranslations",
   }),
+  updatedBy: one(users, {
+    fields: [translations.updatedById],
+    references: [users.id],
+    relationName: "updatedBy",
+  }),
 }));
 
 export type Translation = typeof translations.$inferSelect;
+export type TranslationWithUpdatedBy = typeof translations.$inferSelect & {
+  updatedBy: User | null;
+};
 export type NewTranslation = typeof translations.$inferInsert;

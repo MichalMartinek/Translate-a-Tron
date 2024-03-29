@@ -1,17 +1,20 @@
 "use server";
 
 import { db } from "@/app/db";
-import { Term, Translation, translations } from "@/app/schema";
+import { Term, TranslationWithUpdatedBy, translations } from "@/app/schema";
 import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import OpenAI from "openai";
 
-export type TermWithTranslations = Term & { translations: Translation[] };
+export type TermWithTranslations = Term & {
+  translations: TranslationWithUpdatedBy[];
+};
 
 export async function translate(
   term: TermWithTranslations,
   lang: string,
-  refLang: string
+  refLang: string,
+  userId: number
 ) {
   const originalText = `Translate "${
     term.translations.find((tr) => tr.lang === refLang)?.translation
@@ -27,15 +30,18 @@ export async function translate(
   await saveTranslation(
     term,
     lang,
-    chatCompletion.choices[0].message.content?.replaceAll('"', "") ?? ""
+    chatCompletion.choices[0].message.content?.replaceAll('"', "") ?? "",
+    userId,
+    true
   );
-  revalidatePath(`/translations/${term.projectId}/${lang}`);
 }
 
 export async function saveTranslation(
   term: Term,
   lang: string,
-  translation: string
+  translation: string,
+  userId: number,
+  generatedByAI = false
 ) {
   const exitingTranslation = await db.query.translations.findFirst({
     where: and(eq(translations.termId, term.id), eq(translations.lang, lang)),
@@ -43,10 +49,22 @@ export async function saveTranslation(
   if (exitingTranslation) {
     await db
       .update(translations)
-      .set({ translation })
+      .set({
+        translation,
+        generatedByAI,
+        updatedAt: new Date(),
+        updatedById: userId,
+      })
       .where(eq(translations.id, exitingTranslation.id));
+    revalidatePath(`/translations/${term.projectId}/${lang}`);
     return;
   }
-  await db.insert(translations).values({ termId: term.id, lang, translation });
+  await db.insert(translations).values({
+    termId: term.id,
+    lang,
+    translation,
+    generatedByAI,
+    updatedById: userId,
+  });
   revalidatePath(`/translations/${term.projectId}/${lang}`);
 }
