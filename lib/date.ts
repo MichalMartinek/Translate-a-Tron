@@ -5,7 +5,7 @@
  */
 export function getRelativeTimeString(
   date: Date | number | null | undefined,
-  lang = navigator.language
+  lang = "en"
 ): string {
   if (!date) return "";
   // Allow dates or times to be passed
