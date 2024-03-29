@@ -30,6 +30,7 @@ import { getRelativeTimeString } from "@/lib/date";
 
 enum OrderBy {
   UNTRANSLATED_FIRST = "UNTRANSLATED_FIRST",
+  AI_GENERATED_FIRST = "AI_GENERATED_FIRST",
   A_Z = "A_Z",
   Z_A = "Z_A",
 }
@@ -67,6 +68,14 @@ export default function TermsTable({
         a.translations.find((tr) => tr.lang === choosedLang)?.translation || "";
       const bTranslation =
         b.translations.find((tr) => tr.lang === choosedLang)?.translation || "";
+      if (order === OrderBy.AI_GENERATED_FIRST) {
+        if (
+          a.translations.find((tr) => tr.lang === choosedLang)?.generatedByAI &&
+          !b.translations.find((tr) => tr.lang === choosedLang)?.generatedByAI
+        ) {
+          return -1;
+        }
+      }
       if (order === OrderBy.UNTRANSLATED_FIRST) {
         if (!aTranslation && bTranslation) {
           return -1;
@@ -126,6 +135,9 @@ export default function TermsTable({
               <SelectContent>
                 <SelectItem value={OrderBy.UNTRANSLATED_FIRST}>
                   Untranslated first
+                </SelectItem>
+                <SelectItem value={OrderBy.AI_GENERATED_FIRST}>
+                  AI Generated first
                 </SelectItem>
                 <SelectItem value={OrderBy.A_Z}>Terms A-Z</SelectItem>
                 <SelectItem value={OrderBy.Z_A}>Terms Z-A</SelectItem>
